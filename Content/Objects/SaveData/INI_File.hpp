@@ -1,0 +1,437 @@
+#pragma once
+
+// PATH     ->  Objects/SaveData
+// FILE     ->  INI_File.hpp
+
+#ifdef __APPLE__
+    #include<sys/stat.h>
+#else
+    #include<filesystem>
+#endif
+#include <map>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include "../CoreTypes/DoubleLinkedList.hpp"
+
+using namespace std;
+#ifdef __APPLE__
+    // NOTHING
+#else
+    using namespace filesystem;
+#endif
+
+
+class INI_File {
+protected:
+
+    //////////////////////////////////////////////////
+
+    struct INI_Line {
+
+        //////////////////////////////////////////////////
+
+        string MLine;
+        int MIndex;
+    };
+
+    struct INI_Section {
+
+        //////////////////////////////////////////////////
+
+        map<string, string> MParamMap;
+
+
+        //////////////////////////////////////////////////
+
+        INI_Section& operator = (const INI_Section& rhs) {
+            if (this != &rhs) {
+                MParamMap = rhs.MParamMap;
+            }
+            return *this;
+        }
+    };
+
+    struct INI_Loader {
+
+        //////////////////////////////////////////////////
+
+        DoubleLinkedList<string> MFileRows;
+        bool MRowsSaved;
+
+
+        //////////////////////////////////////////////////
+
+        INI_Loader& operator = (const INI_Loader& rhs) {
+            if (this != &rhs) {
+                MFileRows = rhs.MFileRows;
+                MRowsSaved = rhs.MRowsSaved;
+            }
+            return *this;
+        }
+    };
+
+
+    //////////////////////////////////////////////////
+
+    map<string, INI_Section> MFileMap;
+    INI_Loader MLoader;
+    string MExtension;
+    const char MSlashOP;
+
+
+    //////////////////////////////////////////////////
+
+    bool IsComment(char Value) const {
+        return Value == '#' || Value == ';';
+    }
+
+    bool IsEscape(char Value) const {
+        return Value == '\\';
+    }
+
+    bool IsSectionStart(char Value) const {
+        return Value == '[';
+    }
+
+    bool IsSectionEnd(char Value) const {
+        return Value == ']';
+    }
+
+    bool IsParamSep(char Value) const {
+        return Value == '=';
+    }
+
+    bool IsEndLine(char Value) const {
+        return Value == '\n' || Value == '\0';
+    }
+
+    bool IsSpace(char Value) const {
+        return Value == ' ' || Value == '\t';
+    }
+
+    void ReadLoader() {
+        INI_Section* LSection = nullptr;
+        DLLIterator<string> LIterator;
+
+        for (MLoader.MFileRows.ForEachFromFirst(LIterator); LIterator.GetOffset() < MLoader.MFileRows.GetLength(); LIterator.ShiftForward()) {
+            ReadLine(*LIterator.GetItem(), &LSection);
+        }
+    }
+
+    void ReadLine(const string& Line, INI_Section** Section) {
+        bool LBreak = false;
+        int LIndex = 0;
+        char LChar;
+
+        while (!LBreak && LIndex < Line.length()) {
+            LChar = Line[LIndex];
+
+            if (IsEndLine(LChar) || IsComment(LChar)) {
+                LBreak = true;
+            }
+            else if (IsSpace(LChar)) {
+                LIndex += 1;
+            }
+            else if (IsSectionStart(LChar)) {
+                *Section = LoadSection(Line, LIndex);
+            }
+            else {
+                if (Section != nullptr) {
+                    LoadParam(Line, LIndex, *Section);
+                }
+                else {
+                    LBreak = true;
+                }
+            }
+        }
+    }
+
+    INI_Section* LoadSection(const string& Line, int& Index) {
+        bool LBreak = false;
+        char LChar;
+        string LFakeLine;
+        map<string, INI_Section>::iterator LSectionIT;
+        INI_Section* LReturn = nullptr;
+
+        LFakeLine.reserve(Line.length());
+        Index += 1;
+
+        while (!LBreak && Index < Line.length()) {
+            LChar = Line[Index];
+
+            if (IsEndLine(LChar)) {
+                LBreak = true;
+            }
+            else if (IsSpace(LChar)) {
+                Index += 1;
+            }
+            else if (IsSectionEnd(LChar)) {
+                LBreak = true;
+                LSectionIT = MFileMap.find(LFakeLine);
+
+                if (LSectionIT != MFileMap.end()) {
+                    LReturn = &LSectionIT->second;
+                }
+                Index += 1;
+            }
+            else {
+                LFakeLine.push_back(LChar);
+                Index += 1;
+            }
+        }
+        return LReturn;
+    }
+
+    void LoadParam(const string& Line, int& Index, INI_Section* Section) {
+        if (Section != nullptr) {
+            bool 
+                LBreak = false,
+                LParamNameB = false;
+            char LChar;
+            string 
+                LParamName,
+                LParamValue;
+            string
+                * LFakeLine = &LParamName,
+                * LParam = nullptr;
+            map<string, string>::iterator LParamIT;
+
+            LParamName.reserve(Line.length());
+            LParamValue.reserve(Line.length());
+
+            while (!LBreak && Index < Line.length()) {
+                LChar = Line[Index];
+
+                if (IsEndLine(LChar) || IsComment(LChar) || (IsParamSep(LChar) && LParamNameB)) {
+                    LBreak = true;
+                }
+                else if (IsSpace(LChar)) {
+                    Index += 1;
+                }
+                else if (IsEscape(LChar)) {
+                    LFakeLine->push_back(Line[Index + 1]);
+                    Index += 2;
+                }
+                else if (IsParamSep(LChar) && !LParamNameB) {
+                    LParamIT = Section->MParamMap.find(*LFakeLine);
+
+                    if (LParamIT != Section->MParamMap.end()) {
+                        LParam = &LParamIT->second;
+                        LFakeLine = &LParamValue;
+                        LParamNameB = true;
+                        Index += 1;
+                    }
+                    else {
+                        LBreak = true;
+                        Index = Line.length();
+                    }
+                }
+                else {
+                    LFakeLine->push_back(LChar);
+                    Index += 1;
+                }
+            }
+            if (Index == Line.length() && LParamNameB) {
+                (*LParam) = (*LFakeLine);
+            }
+        }
+    }
+
+    void CopyToLoader() {
+        string LRow;
+
+        MLoader.MFileRows.Clear();
+
+        for (auto& PairS : MFileMap) {
+            LRow = "[" + PairS.first + "]\n";
+            MLoader.MFileRows.InsertAsLast(LRow);
+
+            for (auto& PairP : PairS.second.MParamMap) {
+                LRow = PairP.first + " = " + PairP.second + "\n";
+                MLoader.MFileRows.InsertAsLast(LRow);
+            }
+            MLoader.MFileRows.InsertAsLast("\n");
+        }
+        MLoader.MRowsSaved = true;
+    }
+
+    void CreatePath(const string& Path) {
+        #ifdef __APPLE__
+            struct stat LStat;
+
+            if (stat(Path, &LStat) == -1) {
+                mkdir(Path, 0777);
+            }
+        #else
+            if (!exists(Path)) {
+                create_directories(Path);
+            }
+        #endif
+    }
+
+    bool IsPathValid(const string& Path) const {
+        #ifdef __APPLE__
+            struct stat LStat;
+
+            return stat(Path, &LStat) != -1;
+        #else
+            return exists(Path);
+        #endif
+    }
+
+public:
+
+    //////////////////////////////////////////////////
+
+    #ifdef __APPLE__
+        INI_File() :
+            MSlashOP('/'),
+            MExtension(".ini"),
+            MLoader(nullptr)
+        { }
+    #else
+        INI_File() :
+            MSlashOP('\\'),
+            MExtension(".ini")
+        { }
+    #endif
+
+    ~INI_File()
+    { }
+
+
+    //////////////////////////////////////////////////
+
+    void AddSection(string SectionName) {
+        pair<string, INI_Section> LPair;
+
+        LPair.first = SectionName;
+        LPair.second = INI_Section();
+        MFileMap.insert(LPair);
+    }
+
+    void AddParam(const string& SectionName, string ParamName, string DefaultValue = "#") {
+        map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
+
+        if (LSectionIT != MFileMap.end()) {
+            pair<string, string> LPair;
+
+            LPair.first = ParamName;
+            LPair.second = DefaultValue;
+            LSectionIT->second.MParamMap.insert(LPair);
+        }
+    }
+
+    void RemoveSection(const string& SectionName) {
+        MFileMap.erase(SectionName);
+    }
+
+    void RemoveParam(const string& SectionName) {
+        map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
+
+        if (LSectionIT != MFileMap.end()) {
+            LSectionIT->second.MParamMap.erase(SectionName);
+        }
+    }
+
+    void AssignParam(const string& SectionName, const string& ParamName, string ParamValue) {
+        map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
+
+        if (LSectionIT != MFileMap.end()) {
+            map<string, string>::iterator LParamIT = LSectionIT->second.MParamMap.find(ParamName);
+
+            if (LParamIT != LSectionIT->second.MParamMap.end()) {
+                LParamIT->second = ParamValue;
+            }
+        }
+    }
+
+    string GetParamValue(const string& SectionName, const string& ParamName) {
+        map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
+
+        if (LSectionIT != MFileMap.end()) {
+            map<string, string>::iterator LParamIT = LSectionIT->second.MParamMap.find(ParamName);
+
+            if (LParamIT != LSectionIT->second.MParamMap.end()) {
+                return LParamIT->second;
+            }
+            else {
+                return "NONE";
+            }
+        }
+        else {
+            return "NONE";
+        }
+    }
+
+    string GetParentSection(const string& ParamName) const {
+        return "NONE";
+    }
+
+    void PrintRows() {
+        for (auto& PairS : MFileMap) {
+            cout << "[" << PairS.first << "]\n";
+
+            for (auto& PairP : PairS.second.MParamMap) {
+                cout << PairP.first + " = " << PairP.second << "\n";
+            }
+            cout << "\n";
+        }
+    }
+
+    void SetupFileLoader() {
+        if (!MLoader.MRowsSaved) {
+            CopyToLoader();
+            MLoader.MRowsSaved = true;
+        }
+    }
+
+    void ClearFileLoader() {
+        MLoader.MFileRows.Clear();
+        MLoader.MRowsSaved = false;
+    }
+
+    void SaveToFile(const string& FileName, const string& Path, bool ClearLoader = true) {
+        string LFullPath = Path + MSlashOP + FileName + MExtension;
+        ofstream LFileStr;
+        DLLIterator<string> LStringIT;
+
+        CreatePath(Path);
+        LFileStr.open(LFullPath);
+        SetupFileLoader();
+
+        for (MLoader.MFileRows.ForEachFromFirst(LStringIT); LStringIT.GetOffset() < MLoader.MFileRows.GetLength(); LStringIT.ShiftForward()) {
+            LFileStr << *LStringIT.GetItem();
+        }
+        LFileStr.close();
+        
+        if (ClearLoader) {
+            ClearFileLoader();
+        }
+    }
+
+    bool LoadFromFile(const string& FileName, const string& Path) {
+        if (IsPathValid(Path)) {
+            string 
+                LFullPath = Path + MSlashOP + FileName + MExtension,
+                LFileRow;
+            ifstream LFileStr;
+
+            LFileStr.open(LFullPath);
+            ClearFileLoader();
+            
+            while (getline(LFileStr, LFileRow)) {
+                MLoader.MFileRows.InsertAsLast(LFileRow);
+            }
+            ReadLoader();
+            ClearFileLoader();
+            LFileStr.close();
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+};
