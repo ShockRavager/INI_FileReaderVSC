@@ -1,5 +1,3 @@
-#pragma once
-
 // PATH     ->  *
 // FILE     ->  Launch.cpp
 

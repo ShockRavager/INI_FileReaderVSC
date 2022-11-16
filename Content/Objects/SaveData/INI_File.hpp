@@ -193,6 +193,26 @@ protected:
     * Read the lines that are stored in the loader
     * object
     */
+    void SaveData(const string& FileName, const string& Path) {
+        string LFullPath = Path + MSlashOP + FileName + MExtension;
+        ofstream LFileStr;
+        DoubleLinkedList<INI_Line>::Iterator LLineIT;
+
+        LFileStr.open(LFullPath);
+        WriteFile();
+
+        for (MLoader.MFileRows.ForEachFromFirst(LLineIT); LLineIT.GetOffset() < MLoader.MFileRows.GetLength(); LLineIT.ShiftForward()) {
+            LFileStr << LLineIT.GetItem()->MLine;
+        }
+        LFileStr.close();
+    }
+
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Read the lines that are stored in the loader
+    * object
+    */
     void LoadData() {
         INI_Section* LSection = nullptr;
         DoubleLinkedList<INI_Line>::Iterator LIterator;
@@ -414,7 +434,7 @@ protected:
     * Creates the path if not exists
     */
     void CreatePathIfNotExists(const string& Path) {
-        if (IsPathValid(Path)) {
+        if (!IsPathValid(Path)) {
             CreatePath(Path);
         }
     }
@@ -646,19 +666,13 @@ public:
     bool SaveToFile(const string& FileName, const string& Path, bool Override = true) {
         string LFullPath = Path + MSlashOP + FileName + MExtension;
 
-        if ((Override && IsPathValid(LFullPath)) || (!IsPathValid(Path))) {
-            string LFullPath = Path + MSlashOP + FileName + MExtension;
-            ofstream LFileStr;
-            DoubleLinkedList<INI_Line>::Iterator LLineIT;
-
-            LFileStr.open(LFullPath);
-            CreatePathIfNotExists(Path);
-            WriteFile();
-
-            for (MLoader.MFileRows.ForEachFromFirst(LLineIT); LLineIT.GetOffset() < MLoader.MFileRows.GetLength(); LLineIT.ShiftForward()) {
-                LFileStr << LLineIT.GetItem()->MLine;
-            }
-            LFileStr.close();
+        if (!IsPathValid(LFullPath)) {
+            CreatePath(Path);
+            SaveData(FileName, Path);
+            return true;
+        }
+        else if (Override) {
+            SaveData(FileName, Path);
             return true;
         }
         else {
