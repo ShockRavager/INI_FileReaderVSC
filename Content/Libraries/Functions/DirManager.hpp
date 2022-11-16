@@ -46,10 +46,10 @@ public:
         string 
             LString,
             LFullString;
-        int LMaxID;
+        int LMaxID = Path.length();
 
-        LString.reserve(Path.length());
-        LFullString.reserve(Path.length());
+        LString.reserve(LMaxID);
+        LFullString.reserve(LMaxID);
 
         for (int i = 0; i < LMaxID; i += 1) {
             if (Path[i] != GetPathSlash()) {
@@ -60,7 +60,7 @@ public:
                 mkdir((LFullString + LString).c_str(), 0777);
                 LFullString.append(LString);
                 LString.clear();
-                LString.reserve(Path.length());
+                LString.reserve(LMaxID);
             }
         }
     }

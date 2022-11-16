@@ -3,23 +3,11 @@
 
 #include "Content/Libraries/Functions/DirManager.hpp"
 #include "Content/Objects/SaveData/INI_File.hpp"
+#include "UnitTest/INI_FileUT.hpp"
 
 
 int main() {
-    INI_File LFile;
-
-    LFile.AddSection("Section1");
-    LFile.AddSection("Section2");
-    LFile.AddParam("Section1", "Param1");
-    LFile.AddParam("Section1", "Param2");
-    LFile.AddParam("Section1", "Param3");
-    LFile.AddParam("Section1", "Param4");
-    LFile.AddParam("Section2", "Param1");
-    LFile.AssignParam("Section1", "Param1", "100");
-    LFile.AssignParam("Section1", "Param2", "150");
-    LFile.AssignParam("Section1", "Param4", "300");
-    LFile.LoadFromFile("Config", "Data/INI/");
-    std::cout << "\n";
-    LFile.PrintRows();
+    INI_FileUT::SaveData();
+    INI_FileUT::AssignValue();
     return 0;
 }
