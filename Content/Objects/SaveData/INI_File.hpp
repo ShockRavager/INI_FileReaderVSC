@@ -83,7 +83,7 @@ protected:
     };
 
     /**
-    * NESTED STRUCT
+    * NESTED CLASS
     * --------------------------------------------------
     * This struct contains the list of the lines of the
     * .ini file. This is a volatile object so you need
