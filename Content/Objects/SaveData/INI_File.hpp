@@ -87,6 +87,7 @@ protected:
     //////////////////////////////////////////////////
 
     map<string, INI_Section> MFileMap;
+    map<string, string> MParentSections;
     INI_Loader MLoader;
     string MExtension;
     const char MSlashOP;
@@ -122,7 +123,7 @@ protected:
         return Value == ' ' || Value == '\t';
     }
 
-    void ReadLoader() {
+    void LoadData() {
         INI_Section* LSection = nullptr;
         DoubleLinkedList<INI_Line>::Iterator LIterator;
 
@@ -275,6 +276,14 @@ protected:
         MLoader.MRowsSaved = true;
     }
 
+    INI_Line CreateLoaderLine(string Row, int Index) {
+        INI_Line LLine;
+
+        LLine.MLine = Row;
+        LLine.MIndex = Index;
+        return LLine;
+    }
+
     void CreatePath(const string& Path) {
         #ifdef __APPLE__
             struct stat LStat;
@@ -338,18 +347,30 @@ public:
             LPair.first = ParamName;
             LPair.second = DefaultValue;
             LSectionIT->second.MParamMap.insert(LPair);
+            LPair.first = ParamName;
+            LPair.second = SectionName;
+            MParentSections.insert(LPair);
         }
     }
 
     void RemoveSection(const string& SectionName) {
+        map<string, string>::iterator LIterator = MParentSections.begin();
+
         MFileMap.erase(SectionName);
+    
+        while (LIterator != MParentSections.end()) {
+            if (LIterator->second == SectionName) {
+                LIterator = mapOfElemen.erase(LIterator);
+            }
+        }
     }
 
-    void RemoveParam(const string& SectionName) {
+    void RemoveParam(const string& SectionName, const string& ParamName) {
         map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
 
         if (LSectionIT != MFileMap.end()) {
-            LSectionIT->second.MParamMap.erase(SectionName);
+            LSectionIT->second.MParamMap.erase(ParamName);
+            MParentSections.erase(ParamName);
         }
     }
 
@@ -384,7 +405,14 @@ public:
     }
 
     string GetParentSection(const string& ParamName) const {
-        return "NONE";
+        map<string, INI_Section>::iterator LParamIT = MParentSections.find(ParamName);
+
+        if (LParamIT != MParentSections.end()) {
+            return LParamIT->second;
+        }
+        else {
+            return "#";
+        }
     }
 
     void PrintRows() {
@@ -398,38 +426,12 @@ public:
         }
     }
 
-    void SetupFileLoader() {
-        if (!MLoader.MRowsSaved) {
-            CopyToLoader();
-            MLoader.MRowsSaved = true;
-        }
-    }
-
     void ClearFileLoader() {
         MLoader.MFileRows.Clear();
         MLoader.MRowsSaved = false;
     }
 
-    void SaveToFile(const string& FileName, const string& Path, bool ClearLoader = true) {
-        string LFullPath = Path + MSlashOP + FileName + MExtension;
-        ofstream LFileStr;
-        DoubleLinkedList<INI_Line>::Iterator LLineIT;
-
-        CreatePath(Path);
-        LFileStr.open(LFullPath);
-        SetupFileLoader();
-
-        for (MLoader.MFileRows.ForEachFromFirst(LLineIT); LLineIT.GetOffset() < MLoader.MFileRows.GetLength(); LLineIT.ShiftForward()) {
-            LFileStr << LLineIT.GetItem()->MLine;
-        }
-        LFileStr.close();
-        
-        if (ClearLoader) {
-            ClearFileLoader();
-        }
-    }
-
-    bool LoadFromFile(const string& FileName, const string& Path) {
+    bool ReadFile(const string& FileName, const string& Path) {
         if (IsPathValid(Path)) {
             string  
                 LFullPath = Path + MSlashOP + FileName + MExtension,
@@ -442,18 +444,45 @@ public:
             ClearFileLoader();
             
             while (getline(LFileStr, LFileRow)) {
-                LLine.MLine = LFileRow;
-                LLine.MIndex = LIndex;
-                MLoader.MFileRows.InsertAsLast(LLine);
+                MLoader.MFileRows.InsertAsLast(CreateLoaderLine(LFileRow, LIndex));
                 LIndex += 1;
             }
-            ReadLoader();
-            ClearFileLoader();
             LFileStr.close();
             return true;
         }
         else {
             return false;
         }
+    }
+
+    void WriteFile() {
+        if (!MLoader.MRowsSaved) {
+            CopyToLoader();
+            MLoader.MRowsSaved = true;
+        }
+    }
+
+    void SaveToFile(const string& FileName, const string& Path) {
+        string LFullPath = Path + MSlashOP + FileName + MExtension;
+        ofstream LFileStr;
+        DoubleLinkedList<INI_Line>::Iterator LLineIT;
+
+        CreatePath(Path);
+        LFileStr.open(LFullPath);
+        WriteFile();
+
+        for (MLoader.MFileRows.ForEachFromFirst(LLineIT); LLineIT.GetOffset() < MLoader.MFileRows.GetLength(); LLineIT.ShiftForward()) {
+            LFileStr << LLineIT.GetItem()->MLine;
+        }
+        LFileStr.close();
+    }
+
+    bool LoadFromFile(const string& FileName, const string& Path) {
+        bool LLoad = ReadFile(FileName, Path);
+        
+        if (LLoad) {
+            LoadData();
+        }
+        return LLoad;
     }
 };
