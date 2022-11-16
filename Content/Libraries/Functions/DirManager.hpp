@@ -12,6 +12,11 @@
 #include "../../Objects/CoreTypes/DoubleLinkedList.hpp"
 
 using namespace std;
+#ifdef __APPLE__
+    // NOTHING
+#else
+    using namespace filesystem;
+#endif
 
 
 class DirManager {
@@ -28,7 +33,20 @@ protected:
         #ifdef __APPLE__
             return '/';
         #else
-            return "\\";
+            return '\\';
+        #endif
+    }
+
+    /**
+    * STATIC FUNCTION - void
+    * --------------------------------------------------
+    * Returns the OS based slash separator for the paths
+    */
+    static void CreateDirectory(const string& Path) {
+        #ifdef __APPLE__
+            mkdir((LFullString + LString).c_str(), 0777);
+        #else
+            create_directories(Path);
         #endif
     }
 
@@ -57,7 +75,7 @@ public:
             }
             else {
                 LString.push_back(GetPathSlash());
-                mkdir((LFullString + LString).c_str(), 0777);
+                CreateDirectory(LFullString + LString);
                 LFullString.append(LString);
                 LString.clear();
                 LString.reserve(LMaxID);
