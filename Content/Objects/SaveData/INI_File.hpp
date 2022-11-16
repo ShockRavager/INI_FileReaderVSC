@@ -34,6 +34,17 @@ protected:
 
         string MLine;
         int MIndex;
+
+
+        //////////////////////////////////////////////////
+
+        INI_Line& operator = (const INI_Line& rhs) {
+            if (this != &rhs) {
+                MLine = rhs.MLine;
+                MIndex = rhs.MIndex;
+            }
+            return *this;
+        }
     };
 
     struct INI_Section {
