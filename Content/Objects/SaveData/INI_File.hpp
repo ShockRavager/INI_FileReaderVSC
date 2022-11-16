@@ -360,7 +360,7 @@ public:
     
         while (LIterator != MParentSections.end()) {
             if (LIterator->second == SectionName) {
-                LIterator = mapOfElemen.erase(LIterator);
+                LIterator = MParentSections.erase(LIterator);
             }
         }
     }
@@ -404,8 +404,8 @@ public:
         }
     }
 
-    string GetParentSection(const string& ParamName) const {
-        map<string, INI_Section>::iterator LParamIT = MParentSections.find(ParamName);
+    string GetParentSection(const string& ParamName) {
+        map<string, string>::iterator LParamIT = MParentSections.find(ParamName);
 
         if (LParamIT != MParentSections.end()) {
             return LParamIT->second;
