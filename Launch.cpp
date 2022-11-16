@@ -17,6 +17,9 @@ int main() {
     LFile.AddParam("Section2", "Param1");
     LFile.AssignParam("Section1", "Param1", "100");
     LFile.AssignParam("Section1", "Param2", "150");
-    LFile.SaveToFile("Config", "Data/INI/", true);
+    LFile.AssignParam("Section1", "Param4", "300");
+    LFile.SaveToFile("Config2", "Data/INI/");
+    std::cout << "\n";
+    LFile.PrintRows();
     return 0;
 }

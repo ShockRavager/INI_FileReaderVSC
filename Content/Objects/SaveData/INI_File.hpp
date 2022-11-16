@@ -200,7 +200,6 @@ protected:
         DoubleLinkedList<INI_Line>::Iterator LLineIT;
 
         LFileStr.open(LFullPath);
-        WriteFile();
 
         for (MLoader.MFileRows.ForEachFromFirst(LLineIT); LLineIT.GetOffset() < MLoader.MFileRows.GetLength(); LLineIT.ShiftForward()) {
             LFileStr << LLineIT.GetItem()->MLine;
@@ -564,7 +563,7 @@ public:
     * --------------------------------------------------
     * Clear data in the loader to save space
     */
-    void ClearFileLoader() {
+    void ClearLoader() {
         MLoader.MFileRows.Clear();
         MLoader.MRowsSaved = false;
     }
@@ -587,7 +586,7 @@ public:
             int LIndex = 0;
 
             LFileStr.open(LFullPath);
-            ClearFileLoader();
+            ClearLoader();
             
             while (getline(LFileStr, LFileRow)) {
                 MLoader.MFileRows.InsertAsLast(CreateLoaderLine(LFileRow, LIndex));
@@ -630,10 +629,12 @@ public:
 
         if (!DirManager::DoesPathExists(LFullPath)) {
             DirManager::CreatePath(Path);
+            WriteFile();
             SaveData(FileName, Path);
             return true;
         }
         else if (Override) {
+            WriteFile();
             SaveData(FileName, Path);
             return true;
         }

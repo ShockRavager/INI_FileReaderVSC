@@ -51,10 +51,6 @@ public:
         LString.reserve(Path.length());
         LFullString.reserve(Path.length());
 
-        (Path[Path.length() - 1] == GetPathSlash())
-        ? LMaxID = Path.length() - 1
-        : LMaxID = Path.length();
-
         for (int i = 0; i < LMaxID; i += 1) {
             if (Path[i] != GetPathSlash()) {
                 LString.push_back(Path[i]);
@@ -67,8 +63,6 @@ public:
                 LString.reserve(Path.length());
             }
         }
-        LString.push_back(GetPathSlash());
-        mkdir((LFullString + LString).c_str(), 0777);
     }
 
     /**
@@ -104,6 +98,6 @@ public:
     * Creates the path if not exists
     */
     static string GetFullPath(const string& FileName, const string& Path, const string& Extension) {
-        return Path + GetPathSlash() + FileName + Extension;
+        return Path + FileName + Extension;
     }
 };
