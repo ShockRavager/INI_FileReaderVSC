@@ -16,6 +16,6 @@ int main() {
     LFile.AddParam("Section2", "Param1");
     LFile.AssignParam("Section1", "Param1", "100");
     LFile.AssignParam("Section1", "Param2", "150");
-    LFile.SaveToFile("Config", "Data/INI");
+    LFile.SaveToFile("Config", "Data");
     return 0;
 }

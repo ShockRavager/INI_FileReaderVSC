@@ -4,9 +4,9 @@
 // FILE     ->  INI_File.hpp
 
 #ifdef __APPLE__
-    #include<sys/stat.h>
+    #include <sys/stat.h>
 #else
-    #include<filesystem>
+    #include <filesystem>
 #endif
 #include <map>
 #include <vector>
