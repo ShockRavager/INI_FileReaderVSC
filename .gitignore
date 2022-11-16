@@ -33,3 +33,6 @@
 
 # Config
 *.json
+
+# Other
+*.ini
