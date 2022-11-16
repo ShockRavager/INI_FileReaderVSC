@@ -3,6 +3,10 @@
 // PATH     ->  Content/Libraries/Functions
 // FILE     ->  FileManager.hpp
 
+#ifdef __APPLE__
+    #include <sys/stat.h>
+#else
+    #include <filesystem>
 #include <string>
 #include "../../Objects/CoreTypes/DoubleLinkedList.hpp"
 
@@ -35,6 +39,9 @@ public:
         for (int i = 0; i < Path.length(); i += 1) {
             if (Path[i] != FileManager::GetPathSlash()) {
                 LString.push_back(Path[i]);
+            }
+            else {
+                LString.push_back(FileManager::GetPathSlash());
             }
         }
     }
