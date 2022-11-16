@@ -23,11 +23,23 @@ using namespace std;
 #endif
 
 
+/**
+* CLASS
+* --------------------------------------------------
+* Class that can store data and save it in a file
+* .ini
+*/
 class INI_File {
 protected:
 
     //////////////////////////////////////////////////
 
+    /**
+    * NESTED STRUCT
+    * --------------------------------------------------
+    * Keeps memory of the line as string and its line 
+    * number
+    */
     struct INI_Line {
 
         //////////////////////////////////////////////////
@@ -47,6 +59,12 @@ protected:
         }
     };
 
+    /**
+    * NESTED STRUCT
+    * --------------------------------------------------
+    * Represents a section of the file and contains a 
+    * list of params
+    */
     struct INI_Section {
 
         //////////////////////////////////////////////////
@@ -64,6 +82,13 @@ protected:
         }
     };
 
+    /**
+    * NESTED STRUCT
+    * --------------------------------------------------
+    * This struct contains the list of the lines of the
+    * .ini file. This is a volatile object so you need
+    * to save the file in order to save data
+    */
     struct INI_Loader {
 
         //////////////////////////////////////////////////
@@ -86,43 +111,88 @@ protected:
 
     //////////////////////////////////////////////////
 
-    map<string, INI_Section> MFileMap;
-    map<string, string> MParentSections;
-    INI_Loader MLoader;
-    string MExtension;
-    const char MSlashOP;
+    map<string, INI_Section> MFileMap;              // ATTRIBUTE - Map of all params that can be read by the file
+    map<string, string> MParentSections;            // ATTRIBUTE - Map of the parent sections for all params
+    INI_Loader MLoader;                             // ATTRIBUTE - View INI_Loader struct
+    string MExtension;                              // ATTRIBUTE - Default extension of the file (.ini)
+    const char MSlashOP;                            // ATTRIBUTE - Separator for the paths (OS depending)
 
 
     //////////////////////////////////////////////////
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Return true if the char is a comment delimitator
+    */
     bool IsComment(char Value) const {
         return Value == '#' || Value == ';';
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Return true if the char is an escape delimitator
+    */
     bool IsEscape(char Value) const {
         return Value == '\\';
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Return true if the char is a section start 
+    * delimitator
+    */
     bool IsSectionStart(char Value) const {
         return Value == '[';
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Return true if the char is a section end 
+    * delimitator
+    */
     bool IsSectionEnd(char Value) const {
         return Value == ']';
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Return true if the char is a param separator 
+    * between its name and its value
+    */
     bool IsParamSep(char Value) const {
         return Value == '=';
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Return true if the char is an end line or a invalid
+    * (null) character
+    */
     bool IsEndLine(char Value) const {
         return Value == '\n' || Value == '\0';
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Return true if the char is a space (or a tab)
+    */
     bool IsSpace(char Value) const {
         return Value == ' ' || Value == '\t';
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Read the lines that are stored in the loader
+    * object
+    */
     void LoadData() {
         INI_Section* LSection = nullptr;
         DoubleLinkedList<INI_Line>::Iterator LIterator;
@@ -132,6 +202,11 @@ protected:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Read the line char by char
+    */
     void ReadLine(const string& Line, INI_Section** Section) {
         bool LBreak = false;
         int LIndex = 0;
@@ -160,6 +235,11 @@ protected:
         }
     }
 
+    /**
+    * FUNCTION - INI_Section*
+    * --------------------------------------------------
+    * Load a section from its name passed as a file line
+    */
     INI_Section* LoadSection(const string& Line, int& Index) {
         bool LBreak = false;
         char LChar;
@@ -196,6 +276,12 @@ protected:
         return LReturn;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Load a param from its name and value passed as a 
+    * file line and stores it in its parent section
+    */
     void LoadParam(const string& Line, int& Index, INI_Section* Section) {
         if (Section != nullptr) {
             bool 
@@ -251,6 +337,11 @@ protected:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Stores data as string lines in the loader object
+    */
     void CopyToLoader() {
         INI_Line LLine;
         int LIndex = 0;
@@ -276,6 +367,11 @@ protected:
         MLoader.MRowsSaved = true;
     }
 
+    /**
+    * FUNCTION - INI_Line
+    * --------------------------------------------------
+    * Creates a INI_Line object
+    */
     INI_Line CreateLoaderLine(string Row, int Index) {
         INI_Line LLine;
 
@@ -284,20 +380,24 @@ protected:
         return LLine;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Creates the directory path based on the OS
+    */
     void CreatePath(const string& Path) {
         #ifdef __APPLE__
-            struct stat LStat;
-
-            if (stat(Path.c_str(), &LStat) == -1) {
-                mkdir(Path.c_str(), 0777);
-            }
+            mkdir(Path.c_str(), 0777);
         #else
-            if (!exists(Path)) {
-                create_directories(Path);
-            }
+            create_directories(Path);
         #endif
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Returns true if the path exists (OS based)
+    */
     bool IsPathValid(const string& Path) const {
         #ifdef __APPLE__
             struct stat LStat;
@@ -306,6 +406,17 @@ protected:
         #else
             return exists(Path);
         #endif
+    }
+
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Creates the path if not exists
+    */
+    void CreatePathIfNotExists(const string& Path) {
+        if (IsPathValid(Path)) {
+            CreatePath(Path);
+        }
     }
 
 public:
@@ -330,6 +441,11 @@ public:
 
     //////////////////////////////////////////////////
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Adds a new section in the file map
+    */
     void AddSection(string SectionName) {
         pair<string, INI_Section> LPair;
 
@@ -338,6 +454,11 @@ public:
         MFileMap.insert(LPair);
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Adds a new param in the file map
+    */
     void AddParam(const string& SectionName, string ParamName, string DefaultValue = "#") {
         map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
 
@@ -353,6 +474,11 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Removes the section and its children params
+    */
     void RemoveSection(const string& SectionName) {
         map<string, string>::iterator LIterator = MParentSections.begin();
 
@@ -365,6 +491,11 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Removes a param from the map
+    */
     void RemoveParam(const string& SectionName, const string& ParamName) {
         map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
 
@@ -374,6 +505,11 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Assign a value to a param
+    */
     void AssignParam(const string& SectionName, const string& ParamName, string ParamValue) {
         map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
 
@@ -386,6 +522,11 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - string
+    * --------------------------------------------------
+    * Returns the value of a param as string
+    */
     string GetParamValue(const string& SectionName, const string& ParamName) {
         map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
 
@@ -404,6 +545,11 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - string
+    * --------------------------------------------------
+    * Returns the name of the parent section of a param
+    */
     string GetParentSection(const string& ParamName) {
         map<string, string>::iterator LParamIT = MParentSections.find(ParamName);
 
@@ -415,6 +561,11 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Prints all data in a command line window
+    */
     void PrintRows() {
         for (auto& PairS : MFileMap) {
             cout << "[" << PairS.first << "]\n";
@@ -426,16 +577,29 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Clear data in the loader to save space
+    */
     void ClearFileLoader() {
         MLoader.MFileRows.Clear();
         MLoader.MRowsSaved = false;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Reads the file content and stores it in the loader
+    * NOTE: This will not load any data from the file,
+    *       you must use LoadFromFile function in order 
+    *       to do it
+    */
     bool ReadFile(const string& FileName, const string& Path) {
-        if (IsPathValid(Path)) {
-            string  
-                LFullPath = Path + MSlashOP + FileName + MExtension,
-                LFileRow;
+        string LFullPath = Path + MSlashOP + FileName + MExtension;
+        
+        if (IsPathValid(LFullPath)) {
+            string LFileRow;
             ifstream LFileStr;
             INI_Line LLine;
             int LIndex = 0;
@@ -455,6 +619,14 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Writes data in the loader as strings
+    * NOTE: This will not save any data in the file, you
+    *       must use SaveToFile function in order to do
+    *       it
+    */
     void WriteFile() {
         if (!MLoader.MRowsSaved) {
             CopyToLoader();
@@ -462,21 +634,44 @@ public:
         }
     }
 
-    void SaveToFile(const string& FileName, const string& Path) {
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Saves the content of the loader in a file .ini. 
+    * Mark the override param as true if you want to let
+    * this function to override file if it already exists
+    * in the specified path or as false if you want to
+    * ignore saving in this case
+    */
+    bool SaveToFile(const string& FileName, const string& Path, bool Override = true) {
         string LFullPath = Path + MSlashOP + FileName + MExtension;
-        ofstream LFileStr;
-        DoubleLinkedList<INI_Line>::Iterator LLineIT;
 
-        CreatePath(Path);
-        LFileStr.open(LFullPath);
-        WriteFile();
+        if ((Override && IsPathValid(LFullPath)) || (!IsPathValid(Path))) {
+            string LFullPath = Path + MSlashOP + FileName + MExtension;
+            ofstream LFileStr;
+            DoubleLinkedList<INI_Line>::Iterator LLineIT;
 
-        for (MLoader.MFileRows.ForEachFromFirst(LLineIT); LLineIT.GetOffset() < MLoader.MFileRows.GetLength(); LLineIT.ShiftForward()) {
-            LFileStr << LLineIT.GetItem()->MLine;
+            LFileStr.open(LFullPath);
+            CreatePathIfNotExists(Path);
+            WriteFile();
+
+            for (MLoader.MFileRows.ForEachFromFirst(LLineIT); LLineIT.GetOffset() < MLoader.MFileRows.GetLength(); LLineIT.ShiftForward()) {
+                LFileStr << LLineIT.GetItem()->MLine;
+            }
+            LFileStr.close();
+            return true;
         }
-        LFileStr.close();
+        else {
+            return false;
+        }
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Retrieve data from a file .ini and returns false
+    * if the specified path or file does not exists
+    */
     bool LoadFromFile(const string& FileName, const string& Path) {
         bool LLoad = ReadFile(FileName, Path);
         
