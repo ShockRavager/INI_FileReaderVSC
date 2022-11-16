@@ -57,7 +57,7 @@ protected:
 
         //////////////////////////////////////////////////
 
-        DoubleLinkedList<string> MFileRows;
+        DoubleLinkedList<INI_Line> MFileRows;
         bool MRowsSaved;
 
 
@@ -113,10 +113,10 @@ protected:
 
     void ReadLoader() {
         INI_Section* LSection = nullptr;
-        DLLIterator<string> LIterator;
+        DoubleLinkedList<INI_Line>::Iterator LIterator;
 
         for (MLoader.MFileRows.ForEachFromFirst(LIterator); LIterator.GetOffset() < MLoader.MFileRows.GetLength(); LIterator.ShiftForward()) {
-            ReadLine(*LIterator.GetItem(), &LSection);
+            ReadLine(LIterator.GetItem()->MLine, &LSection);
         }
     }
 
@@ -240,19 +240,26 @@ protected:
     }
 
     void CopyToLoader() {
-        string LRow;
+        INI_Line LLine;
+        int LIndex = 0;
 
         MLoader.MFileRows.Clear();
 
         for (auto& PairS : MFileMap) {
-            LRow = "[" + PairS.first + "]\n";
-            MLoader.MFileRows.InsertAsLast(LRow);
+            LLine.MLine = "[" + PairS.first + "]\n";
+            LLine.MIndex = LIndex;
+            MLoader.MFileRows.InsertAsLast(LLine);
+            LIndex += 1;
 
             for (auto& PairP : PairS.second.MParamMap) {
-                LRow = PairP.first + " = " + PairP.second + "\n";
-                MLoader.MFileRows.InsertAsLast(LRow);
+                LLine.MLine = PairP.first + " = " + PairP.second + "\n";
+                LLine.MIndex = LIndex;
+                MLoader.MFileRows.InsertAsLast(LLine);
+                LIndex += 1;
             }
-            MLoader.MFileRows.InsertAsLast("\n");
+            LLine.MLine = "\n";
+            LLine.MIndex = LIndex;
+            MLoader.MFileRows.InsertAsLast(LLine);
         }
         MLoader.MRowsSaved = true;
     }
@@ -261,8 +268,8 @@ protected:
         #ifdef __APPLE__
             struct stat LStat;
 
-            if (stat(Path, &LStat) == -1) {
-                mkdir(Path, 0777);
+            if (stat(Path.c_str(), &LStat) == -1) {
+                mkdir(Path.c_str(), 0777);
             }
         #else
             if (!exists(Path)) {
@@ -275,7 +282,7 @@ protected:
         #ifdef __APPLE__
             struct stat LStat;
 
-            return stat(Path, &LStat) != -1;
+            return stat(Path.c_str(), &LStat) != -1;
         #else
             return exists(Path);
         #endif
@@ -288,8 +295,7 @@ public:
     #ifdef __APPLE__
         INI_File() :
             MSlashOP('/'),
-            MExtension(".ini"),
-            MLoader(nullptr)
+            MExtension(".ini")
         { }
     #else
         INI_File() :
@@ -396,14 +402,14 @@ public:
     void SaveToFile(const string& FileName, const string& Path, bool ClearLoader = true) {
         string LFullPath = Path + MSlashOP + FileName + MExtension;
         ofstream LFileStr;
-        DLLIterator<string> LStringIT;
+        DoubleLinkedList<INI_Line>::Iterator LLineIT;
 
         CreatePath(Path);
         LFileStr.open(LFullPath);
         SetupFileLoader();
 
-        for (MLoader.MFileRows.ForEachFromFirst(LStringIT); LStringIT.GetOffset() < MLoader.MFileRows.GetLength(); LStringIT.ShiftForward()) {
-            LFileStr << *LStringIT.GetItem();
+        for (MLoader.MFileRows.ForEachFromFirst(LLineIT); LLineIT.GetOffset() < MLoader.MFileRows.GetLength(); LLineIT.ShiftForward()) {
+            LFileStr << LLineIT.GetItem()->MLine;
         }
         LFileStr.close();
         
@@ -414,16 +420,21 @@ public:
 
     bool LoadFromFile(const string& FileName, const string& Path) {
         if (IsPathValid(Path)) {
-            string 
+            string  
                 LFullPath = Path + MSlashOP + FileName + MExtension,
                 LFileRow;
             ifstream LFileStr;
+            INI_Line LLine;
+            int LIndex = 0;
 
             LFileStr.open(LFullPath);
             ClearFileLoader();
             
             while (getline(LFileStr, LFileRow)) {
-                MLoader.MFileRows.InsertAsLast(LFileRow);
+                LLine.MLine = LFileRow;
+                LLine.MIndex = LIndex;
+                MLoader.MFileRows.InsertAsLast(LLine);
+                LIndex += 1;
             }
             ReadLoader();
             ClearFileLoader();
