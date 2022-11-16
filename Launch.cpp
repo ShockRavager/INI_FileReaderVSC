@@ -1,6 +1,7 @@
 // PATH     ->  *
 // FILE     ->  Launch.cpp
 
+#include "Content/Libraries/Functions/DirManager.hpp"
 #include "Content/Objects/SaveData/INI_File.hpp"
 
 
@@ -16,6 +17,6 @@ int main() {
     LFile.AddParam("Section2", "Param1");
     LFile.AssignParam("Section1", "Param1", "100");
     LFile.AssignParam("Section1", "Param2", "150");
-    LFile.SaveToFile("Config", "Data");
+    DirManager::CreatePath("Alfa/Beta/Gamma/");
     return 0;
 }

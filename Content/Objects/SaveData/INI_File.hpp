@@ -14,6 +14,7 @@
 #include <fstream>
 #include <iostream>
 #include "../CoreTypes/DoubleLinkedList.hpp"
+#include "../../Libraries/Functions/DirManager.hpp"
 
 using namespace std;
 #ifdef __APPLE__
@@ -400,45 +401,6 @@ protected:
         return LLine;
     }
 
-    /**
-    * FUNCTION - void
-    * --------------------------------------------------
-    * Creates the directory path based on the OS
-    */
-    void CreatePath(const string& Path) {
-        #ifdef __APPLE__
-            mkdir(Path.c_str(), 0777);
-        #else
-            create_directories(Path);
-        #endif
-    }
-
-    /**
-    * FUNCTION - bool
-    * --------------------------------------------------
-    * Returns true if the path exists (OS based)
-    */
-    bool IsPathValid(const string& Path) const {
-        #ifdef __APPLE__
-            struct stat LStat;
-
-            return stat(Path.c_str(), &LStat) != -1;
-        #else
-            return exists(Path);
-        #endif
-    }
-
-    /**
-    * FUNCTION - bool
-    * --------------------------------------------------
-    * Creates the path if not exists
-    */
-    void CreatePathIfNotExists(const string& Path) {
-        if (!IsPathValid(Path)) {
-            CreatePath(Path);
-        }
-    }
-
 public:
 
     //////////////////////////////////////////////////
@@ -616,9 +578,9 @@ public:
     *       to do it
     */
     bool ReadFile(const string& FileName, const string& Path) {
-        string LFullPath = Path + MSlashOP + FileName + MExtension;
+        string LFullPath = DirManager::GetFullPath(FileName, Path, MExtension);
         
-        if (IsPathValid(LFullPath)) {
+        if (DirManager::DoesPathExists(LFullPath)) {
             string LFileRow;
             ifstream LFileStr;
             INI_Line LLine;
@@ -664,10 +626,10 @@ public:
     * ignore saving in this case
     */
     bool SaveToFile(const string& FileName, const string& Path, bool Override = true) {
-        string LFullPath = Path + MSlashOP + FileName + MExtension;
+        string LFullPath = DirManager::GetFullPath(FileName, Path, MExtension);
 
-        if (!IsPathValid(LFullPath)) {
-            CreatePath(Path);
+        if (!DirManager::DoesPathExists(LFullPath)) {
+            DirManager::CreatePath(Path);
             SaveData(FileName, Path);
             return true;
         }
