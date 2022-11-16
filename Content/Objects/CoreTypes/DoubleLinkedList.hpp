@@ -10,6 +10,11 @@ protected:
 
     //////////////////////////////////////////////////
 
+    /**
+    * NESTED STRUCT
+    * --------------------------------------------------
+    * A node of the list
+    */
     struct DLLNode {
 
         //////////////////////////////////////////////////
@@ -23,12 +28,17 @@ protected:
 
     //////////////////////////////////////////////////
 
-    DLLNode* MPivot;
-    int MLength;
+    DLLNode* MPivot;                    // ATTRIBUTE: Pivot element of this list, only destructor can delete it
+    int MLength;                        // ATTRIBUTE: Number of elements in the list
 
 
     //////////////////////////////////////////////////
 
+    /**
+    * FUNCTION - DLLNode*
+    * --------------------------------------------------
+    * Create pivot node
+    */
     DLLNode* CreatePivot() {
         DLLNode* LNode = new DLLNode;
 
@@ -37,6 +47,11 @@ protected:
         return LNode;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Insert a node in the list
+    */
     void InsertNode(DLLNode* Node, DLLNode* Prev, DLLNode* Next) {
         Node->MPrev = Prev;
         Node->MNext = Next;
@@ -44,12 +59,22 @@ protected:
         Next->MPrev = Node;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Remove a node from the list
+    */
     void RemoveNode(DLLNode* Node) {
         Node->MPrev->MNext = Node->MNext;
         Node->MNext->MPrev = Node->MPrev;
         delete Node;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Recursively delete all the nodes in the list
+    */
     void ClearHP(DLLNode* Node) {
         if (Node != MPivot) {
             ClearHP(Node->MNext);
@@ -61,38 +86,11 @@ public:
 
     //////////////////////////////////////////////////
 
-    DoubleLinkedList() :
-        MPivot(CreatePivot()),
-        MLength(0)
-    { 
-        MPivot->MPrev = MPivot;
-        MPivot->MNext = MPivot;
-    }
-
-    DoubleLinkedList(const DoubleLinkedList<TItem>& Copy) :
-        MPivot(CreatePivot()),
-        MLength(Copy.MLength)
-    { 
-        Iterator LIterator;
-        DLLNode* LNode = nullptr;
-
-        for (Copy.ForEachFromFirst(LIterator); LIterator.GetOffset() < Copy.MLength; LIterator.ShiftForward()) {
-            LNode = new DLLNode;
-
-            LNode->MItem = (*LIterator.GetItem());
-            InsertNode(LNode, MPivot->MPrev, MPivot);
-        }
-    }
-
-    ~DoubleLinkedList()
-    {
-        ClearHP(MPivot->MNext);
-        delete MPivot;
-    }
-
-
-    //////////////////////////////////////////////////
-
+    /**
+    * NESTED CLASS
+    * --------------------------------------------------
+    * Iterator for this list
+    */
     class Iterator {
         protected:
 
@@ -101,24 +99,44 @@ public:
         DLLNode
             * MNode,
             * MPivot;
-        int MOffset;
+        int MOffset;            // ATTRIBUTE: The number of elements already watched
 
     public:
 
         //////////////////////////////////////////////////
 
+        /**
+        * FUNCTION - void
+        * --------------------------------------------------
+        * Update the ref node
+        */
         void SetNode(DLLNode* Node) {
             MNode = Node;
         }
 
+        /**
+        * FUNCTION - void
+        * --------------------------------------------------
+        * Update the ref pivot
+        */
         void SetPivot(DLLNode* Node) {
             MPivot = Node;
         }
 
+        /**
+        * FUNCTION - void
+        * --------------------------------------------------
+        * Update offset
+        */
         void SetOffset(int Value) {
             MOffset = Value;
         }
 
+        /**
+        * FUNCTION - void
+        * --------------------------------------------------
+        * Shift to the next element
+        */
         void ShiftForward() {
             if (MNode->MNext != MPivot) {
                 MNode = MNode->MNext;
@@ -129,6 +147,11 @@ public:
             MOffset += 1;
         }
 
+        /**
+        * FUNCTION - void
+        * --------------------------------------------------
+        * Shift to the previous element
+        */
         void ShiftReverse() {
             if (MNode->MPrev != MPivot) {
                 MNode = MNode->MPrev;
@@ -139,6 +162,11 @@ public:
             MOffset += 1;
         }
 
+        /**
+        * FUNCTION - void
+        * --------------------------------------------------
+        * Shift forward by a certain number of elements
+        */
         void ShiftForwardBy(int Offset) {
             for (int i = 0; i < Offset; i += 1) {
                 if (MNode->MNext != MPivot) {
@@ -151,6 +179,11 @@ public:
             MOffset += Offset;
         }
 
+        /**
+        * FUNCTION - void
+        * --------------------------------------------------
+        * Shift reverse by a certain number of elements
+        */
         void ShiftReverseBy(int Offset) {
             for (int i = 0; i < Offset; i += 1) {
                 if (MNode->MPrev != MPivot) {
@@ -163,10 +196,21 @@ public:
             MOffset -= Offset;
         }
 
+        /**
+        * FUNCTION - TItem*
+        * --------------------------------------------------
+        * Returns a pointer to the current item stored in 
+        * the iterator
+        */
         TItem* GetItem() const {
             return &MNode->MItem;
         }
 
+        /**
+        * FUNCTION - int
+        * --------------------------------------------------
+        * Returns the current offset
+        */
         int GetOffset() const {
             return MOffset;
         }
@@ -187,42 +231,131 @@ public:
 
     //////////////////////////////////////////////////
 
-    DLLNode* GetPivot() const {
-        return MPivot;
+    /**
+    * CONSTRUCTOR
+    * --------------------------------------------------
+    * Default constructor
+    */
+    DoubleLinkedList() :
+        MPivot(CreatePivot()),
+        MLength(0)
+    { 
+        MPivot->MPrev = MPivot;
+        MPivot->MNext = MPivot;
     }
 
+    /**
+    * CONSTRUCTOR
+    * --------------------------------------------------
+    * Copy constructor
+    */
+    DoubleLinkedList(const DoubleLinkedList<TItem>& Copy) :
+        MPivot(CreatePivot()),
+        MLength(Copy.MLength)
+    { 
+        Iterator LIterator;
+        DLLNode* LNode = nullptr;
+
+        for (Copy.ForEachFromFirst(LIterator); LIterator.GetOffset() < Copy.MLength; LIterator.ShiftForward()) {
+            LNode = new DLLNode;
+
+            LNode->MItem = (*LIterator.GetItem());
+            InsertNode(LNode, MPivot->MPrev, MPivot);
+        }
+    }
+
+    /**
+    * DESTRUCTOR
+    * --------------------------------------------------
+    * Clear all the nodes and deletes the pivot element
+    */
+    ~DoubleLinkedList()
+    {
+        ClearHP(MPivot->MNext);
+        delete MPivot;
+    }
+
+
+    //////////////////////////////////////////////////
+
+    /**
+    * const FUNCTION - int
+    * --------------------------------------------------
+    * Returns the length of the list
+    */
     int GetLength() const {
         return MLength;
     }
 
+    /**
+    * FUNCTION - TItem&
+    * --------------------------------------------------
+    * Get the last item stored at the list
+    */
     TItem& GetFirst() {
         return MPivot->MNext->MItem;
     }
 
+    /**
+    * const FUNCTION - TItem&
+    * --------------------------------------------------
+    * Get the first item stored at the list
+    */
     TItem& GetFirst() const {
         return MPivot->MNext->MItem;
     }
 
+    /**
+    * FUNCTION - TItem&
+    * --------------------------------------------------
+    * Get the last item stored at the list
+    */
     TItem& GetLast() {
         return MPivot->MPrev->MItem;
     }
 
+    /**
+    * const FUNCTION - TItem&
+    * --------------------------------------------------
+    * Get the last item stored at the list
+    */
     TItem& GetLast() const {
         return MPivot->MPrev->MItem;
     }
 
+    /**
+    * FUNCTION - TItem&
+    * --------------------------------------------------
+    * Get the item stored at the pivot element
+    */
     TItem& GetPivotItem() {
         return MPivot->MItem;
     }
 
+    /**
+    * const FUNCTION - TItem&
+    * --------------------------------------------------
+    * Get the item stored at the pivot element
+    */
     TItem& GetPivotItem() const {
         return MPivot->MItem;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Assign an item for the pivot, you can use this 
+    * an additional element
+    */
     void AssignPivotItem(TItem Item) {
         MPivot->MItem = Item;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Inserts an element at the start of the list
+    */
     void InsertAsFirst(TItem Item) {
         DLLNode* LNode = new DLLNode;
 
@@ -231,6 +364,11 @@ public:
         MLength += 1;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Inserts an element at the end of the list
+    */
     void InsertAsLast(TItem Item) {
         DLLNode* LNode = new DLLNode;
 
@@ -239,6 +377,11 @@ public:
         MLength += 1;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Inserts an element at a specfied offset
+    */
     void InsertAt(TItem Item, int Offset) {
         DLLNode
             * LNodeID = MPivot,
@@ -254,6 +397,12 @@ public:
         MLength += 1;
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Removes an item from the list and returns false if
+    * the element does not exists
+    */
     bool RemoveItem(const TItem& Item) {
         DLLNode* LNodeID = MPivot;
         int LIndex = 0;
@@ -276,6 +425,15 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Removes the item at the specified index
+    * NOTE: The list is circular, so if the offset 
+    *       exceeds the list length, it restart watching
+    *       from the first element (until it has reached
+    *       the right offset ID)
+    */
     void RemoveAt(int Offset) {
         DLLNode* LNodeID = MPivot;
         int LIndex = 0;
@@ -295,6 +453,11 @@ public:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Clears the list
+    */
     void Clear() {
         ClearHP(MPivot->MNext);
         delete MPivot;
@@ -302,18 +465,36 @@ public:
         MLength = 0;
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Begins a for each loop starting from the first
+    * element
+    */
     void ForEachFromFirst(Iterator& Object) const {
         Object.SetNode(MPivot->MNext);
         Object.SetPivot(MPivot);
         Object.SetOffset(0);
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Begins a for each loop starting from the last 
+    * element
+    */
     void ForEachFromLast(Iterator& Object) const {
         Object.SetNode(MPivot->MPrev);
         Object.SetPivot(MPivot);
         Object.SetOffset(0);
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Begins a for each loop starting from a specified 
+    * offset
+    */
     void ForEachFrom(Iterator& Object, int Offset) const {
         DLLNode* LNodeID = MPivot->MNext;
         int LIndex = 0;
