@@ -17,6 +17,6 @@ int main() {
     LFile.AddParam("Section2", "Param1");
     LFile.AssignParam("Section1", "Param1", "100");
     LFile.AssignParam("Section1", "Param2", "150");
-    DirManager::CreatePath("Alfa/Beta/Gamma/");
+    LFile.SaveToFile("Config", "Data/INI/", true);
     return 0;
 }

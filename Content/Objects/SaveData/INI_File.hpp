@@ -195,7 +195,7 @@ protected:
     * object
     */
     void SaveData(const string& FileName, const string& Path) {
-        string LFullPath = Path + MSlashOP + FileName + MExtension;
+        string LFullPath = DirManager::GetFullPath(FileName, Path, MExtension);
         ofstream LFileStr;
         DoubleLinkedList<INI_Line>::Iterator LLineIT;
 
