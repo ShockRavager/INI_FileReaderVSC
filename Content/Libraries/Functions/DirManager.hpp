@@ -9,7 +9,7 @@
     #include <filesystem>
 #endif
 #include <string>
-#include "DoubleLinkedList.hpp"
+#include "../../Objects/CoreTypes/DoubleLinkedList.hpp"
 
 using namespace std;
 

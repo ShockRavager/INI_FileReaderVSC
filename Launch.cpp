@@ -1,8 +1,8 @@
 // PATH     ->  *
 // FILE     ->  Launch.cpp
 
-#include "DirManager.hpp"
-#include "INI_File.hpp"
+#include "Content/Libraries/Functions/DirManager.hpp"
+#include "Content/Objects/SaveData/INI_File.hpp"
 #include "UnitTest/INI_FileUT.hpp"
 
 using namespace std;

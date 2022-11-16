@@ -13,8 +13,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include "DoubleLinkedList.hpp"
-#include "DirManager.hpp"
+#include "../CoreTypes/DoubleLinkedList.hpp"
+#include "../../Libraries/Functions/DirManager.hpp"
 
 using namespace std;
 #ifdef __APPLE__
