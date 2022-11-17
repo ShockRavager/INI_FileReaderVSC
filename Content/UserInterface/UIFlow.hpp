@@ -32,14 +32,16 @@ protected:
     void CreateCommands() {
         InsertCmd("CMD", "View all commands");
         InsertCmd("EXIT", "Quit program");
-        InsertCmd("SECINS", "Add new section");
-        InsertCmd("PARINS", "Add new param");
         InsertCmd("PARASS", "Assign a value to a param (if it does not exists, returns an error message)");
         InsertCmd("SECVIEW", "Watch all params for a section and their value (if it does not exists, returns an error message)");
         InsertCmd("PARVIEW", "Watch the value of this param (if it does not exists, returns an error message)");
         InsertCmd("FILEVIEW", "Watch all the file content");
         InsertCmd("SECREM", "Removes a section and all its children param (if it does not exists, returns an error message)");
         InsertCmd("PARREM", "Removes a param (if it does not exists, returns an error message)");
+        InsertCmd("FILESAVC", "Saves the file to a location");
+        InsertCmd("GIVEPATH", "Gives a default path where to save (call FILESAVO)");
+        InsertCmd("FILESAVO", "Saves the file in the default given location (if you give it before)");
+        InsertCmd("FILELOAD", "Loads file from a location");
     }
 
     void PrintSpaces(int Amount) {
@@ -62,61 +64,45 @@ protected:
         cout << "\n";
     }
 
-    string ExecAction(const string& ActionName, INI_File& File) {
-        if (ActionName == "CMD") {
-            PrintCommands();
-        }
-        else if (ActionName == "SECINS") {
-            ActionSECINS(File);
-        }
-    }
-
-    void ActionSECINS(INI_File& File) {
-        string LString;
-
-        cout << "Insert section name: ";
-        cin >> LString;
-        File.AddSection(LString);
-    }
-
-    void ActionPARINS(INI_File& File) {
-        string LString[3];
-        bool LInserted;
-
-        cout << "Insert param name: ";
-        cin >> LString[0];
-        cout << "Insert parent section name: ";
-        cin >> LString[1];
-        cout << "Insert param default value (type # or ; to leave the value empty): ";
-        cin >> LString[2];
-        LInserted = File.AddParam(LString[1], LString[0], LString[2]);
-
-        if (!LInserted) {
-            cout << "\nERROR - The specified section does not exists...\n";
-        }
-    }
-
 public:
 
     //////////////////////////////////////////////////
 
     void BeginFlow() {
         INI_File LFile;
+        INI_RWFlow LFileFlow(&LFile);
         string LString;
-        bool LExecValid = true;
+        bool 
+            LExecValid = true,
+            LCmdValid;
 
+        LFile.AddSection("Computer1");
+        LFile.AddParam("Computer1", "Color");
+        LFile.AddParam("Computer1", "Type");
+        LFile.AddParam("Computer1", "Weight");
+        LFile.AddSection("Computer2");
+        LFile.AddParam("Computer2", "Color");
+        LFile.AddParam("Computer2", "Type");
+        LFile.AddParam("Computer2", "Weight");
         CreateCommands();
         cout << "\n****** INI File Reader ******\n\n";
 
         while (LExecValid) {
-            cout << "Type CMD to view all commands or a command: ";
+            cout << "\nType CMD to view all commands or a command: ";
             cin >> LString;
 
-            if (LString != "EXIT") {
-                ExecAction(LString, LFile);
+            if (LString == "CMD") {
+                PrintCommands();
+            }
+            else if (LString == "EXIT") {
+                LExecValid = false;
             }
             else {
-                LExecValid = false;
+                LCmdValid = LFileFlow.ExecAction(LString);
+            }
+
+            if (!LCmdValid) {
+                cout << "ERROR - Invalid command...\n";
             }
         }
     }

@@ -433,6 +433,7 @@ public:
         LPair.first = SectionName;
         LPair.second = INI_Section();
         MFileMap.insert(LPair);
+        MLoader.MRowsSaved = false;
     }
 
     /**
@@ -453,6 +454,7 @@ public:
             LPair.first = ParamName;
             LPair.second = SectionName;
             MParentSections.insert(LPair);
+            MLoader.MRowsSaved = false;
             return true;
         }
         else {
@@ -473,6 +475,7 @@ public:
         while (LIterator != MParentSections.end()) {
             if (LIterator->second == SectionName) {
                 LIterator = MParentSections.erase(LIterator);
+                MLoader.MRowsSaved = false;
             }
         }
     }
@@ -488,24 +491,29 @@ public:
         if (LSectionIT != MFileMap.end()) {
             LSectionIT->second.MParamMap.erase(ParamName);
             MParentSections.erase(ParamName);
+            MLoader.MRowsSaved = false;
         }
     }
 
     /**
-    * FUNCTION - void
+    * FUNCTION - bool
     * --------------------------------------------------
     * Assign a value to a param
     */
-    void AssignParam(const string& SectionName, const string& ParamName, string ParamValue) {
+    bool AssignParam(const string& SectionName, const string& ParamName, string ParamValue) {
         map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
+        bool LValid = false;;
 
         if (LSectionIT != MFileMap.end()) {
             map<string, string>::iterator LParamIT = LSectionIT->second.MParamMap.find(ParamName);
 
             if (LParamIT != LSectionIT->second.MParamMap.end()) {
                 LParamIT->second = ParamValue;
+                LValid = true;
+                MLoader.MRowsSaved = false;
             }
         }
+        return LValid;
     }
 
     /**
