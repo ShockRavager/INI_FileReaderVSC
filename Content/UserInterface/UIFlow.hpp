@@ -36,8 +36,6 @@ protected:
         InsertCmd("SECVIEW", "Watch all params for a section and their value (if it does not exists, returns an error message)");
         InsertCmd("PARVIEW", "Watch the value of this param (if it does not exists, returns an error message)");
         InsertCmd("FILEVIEW", "Watch all the file content");
-        InsertCmd("SECREM", "Removes a section and all its children param (if it does not exists, returns an error message)");
-        InsertCmd("PARREM", "Removes a param (if it does not exists, returns an error message)");
         InsertCmd("FILESAVC", "Saves the file to a location");
         InsertCmd("GIVEPATH", "Gives a default path where to save (call FILESAVO)");
         InsertCmd("FILESAVO", "Saves the file in the default given location (if you give it before)");
