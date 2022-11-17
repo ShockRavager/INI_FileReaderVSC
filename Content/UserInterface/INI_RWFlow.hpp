@@ -135,7 +135,7 @@ protected:
         cin >> LString[0];
         cout << "Insert parent section name: ";
         cin >> LString[1];
-        cout << "\nValue = " << LFileRef->GetParamValue(LString[1], LString[0]);
+        cout << "\nValue = " << LFileRef->GetParamValue(LString[1], LString[0]) << "\n";
     }
 
 public:
