@@ -1,7 +1,7 @@
 #pragma once
 
 // PATH     ->  Content/UserInterface
-// FILE     ->  INI_RWFlow.hpp
+// FILE     ->  INI_ReadWrite.hpp
 
 #include <iostream>
 #include <string>
@@ -11,7 +11,7 @@
 using namespace std;
 
 
-class INI_RWFlow {
+class INI_ReadWrite {
 protected:
 
     //////////////////////////////////////////////////
@@ -142,7 +142,7 @@ public:
 
     //////////////////////////////////////////////////
 
-    INI_RWFlow(INI_File* File) :
+    INI_ReadWrite(INI_File* File) :
         LFileRef(File)
     { 
         MGivenPath[0] = "\0";

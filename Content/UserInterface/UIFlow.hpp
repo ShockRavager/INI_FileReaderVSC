@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include "INI_RWFlow.hpp"
+#include "INI_ReadWrite.hpp"
 
 using namespace std;
 
@@ -62,26 +62,38 @@ protected:
         cout << "\n";
     }
 
+    void InitFileMap(INI_File& File) {
+        File.AddSection("GameCharacter");
+        File.AddSection("GC.Knight");
+        File.AddSection("GC.Bandit");
+        File.AddParam("GameCharacter", "DefHP");
+        File.AddParam("GameCharacter", "DefFP");
+        File.AddParam("GameCharacter", "MaxArmor");
+        File.AddParam("GC.Knight", "OverrideHP");
+        File.AddParam("GC.Knight", "OverrideFP");
+        File.AddParam("GC.Knight", "OverrideMaxArmor");
+        File.AddParam("GC.Knight", "TrainingCost");
+        File.AddParam("GC.Knight", "TrainingTime");
+        File.AddParam("GC.Bandit", "OverrideHP");
+        File.AddParam("GC.Bandit", "OverrideFP");
+        File.AddParam("GC.Bandit", "OverrideMaxArmor");
+        File.AddParam("GC.Bandit", "TrainingCost");
+        File.AddParam("GC.Bandit", "TrainingTime");
+    }
+
 public:
 
     //////////////////////////////////////////////////
 
     void BeginFlow() {
         INI_File LFile;
-        INI_RWFlow LFileFlow(&LFile);
+        INI_ReadWrite LFileFlow(&LFile);
         string LString;
         bool 
             LExecValid = true,
             LCmdValid;
 
-        LFile.AddSection("Computer1");
-        LFile.AddParam("Computer1", "Color");
-        LFile.AddParam("Computer1", "Type");
-        LFile.AddParam("Computer1", "Weight");
-        LFile.AddSection("Computer2");
-        LFile.AddParam("Computer2", "Color");
-        LFile.AddParam("Computer2", "Type");
-        LFile.AddParam("Computer2", "Weight");
+        InitFileMap(LFile);
         CreateCommands();
         cout << "\n****** INI File Reader ******\n\n";
 
