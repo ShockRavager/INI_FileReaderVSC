@@ -436,11 +436,12 @@ public:
     }
 
     /**
-    * FUNCTION - void
+    * FUNCTION - bool
     * --------------------------------------------------
-    * Adds a new param in the file map
+    * Adds a new param in the file map, returns false if
+    * a section with the specified name does not exists
     */
-    void AddParam(const string& SectionName, string ParamName, string DefaultValue = "#") {
+    bool AddParam(const string& SectionName, string ParamName, string DefaultValue = "#") {
         map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
 
         if (LSectionIT != MFileMap.end()) {
@@ -452,6 +453,10 @@ public:
             LPair.first = ParamName;
             LPair.second = SectionName;
             MParentSections.insert(LPair);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 

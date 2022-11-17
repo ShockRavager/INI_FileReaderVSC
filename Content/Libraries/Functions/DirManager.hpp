@@ -44,7 +44,7 @@ protected:
     */
     static void CreateDirectory(const string& Path) {
         #ifdef __APPLE__
-            mkdir((LFullString + LString).c_str(), 0777);
+            mkdir(Path.c_str(), 0777);
         #else
             create_directories(Path);
         #endif
