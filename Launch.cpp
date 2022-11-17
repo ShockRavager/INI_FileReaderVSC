@@ -12,7 +12,6 @@ using namespace std;
 
 int main() {
     UIFlow LUserInterface;
-    INI_File LFile;
 
     LUserInterface.BeginFlow();
     return 0;
