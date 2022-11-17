@@ -103,6 +103,41 @@ protected:
         cin >> MGivenPath[1];
     }
 
+    void ActionSECVIEW() {
+        string LString;
+        DoubleLinkedList<string> LList;
+
+        cout << "\nInsert section name: ";
+        cin >> LString;
+        LList = LFileRef->GetParamList(LString);
+        
+        if (LList.GetPivotItem() == "NONE") {
+            cout << "\nERROR - The specified section or param does not exists...\n";
+        }
+        else {
+            DoubleLinkedList<string>::Iterator LIterator;
+
+            cout << "\n";
+
+            for (LList.ForEachFromFirst(LIterator); LIterator.GetOffset() < LList.GetLength(); LIterator.ShiftForward()) {
+                cout << *LIterator.GetItem() << " = ";
+                LIterator.ShiftForward();
+                cout << *LIterator.GetItem();
+                cout << "\n";
+            }
+        }
+    }
+
+    void ActionPARVIEW() {
+        string LString[2];
+
+        cout << "\nInsert param name: ";
+        cin >> LString[0];
+        cout << "Insert parent section name: ";
+        cin >> LString[1];
+        cout << "\nValue = " << LFileRef->GetParamValue(LString[1], LString[0]);
+    }
+
 public:
 
     //////////////////////////////////////////////////
@@ -141,6 +176,12 @@ public:
         }
         else if (Value == "GIVEPATH") {
             ActionGIVEPATH();
+        }
+        else if (Value == "SECVIEW") {
+            ActionSECVIEW();
+        }
+        else if (Value == "PARVIEW") {
+            ActionPARVIEW();
         }
         else {
             LReturn = false;

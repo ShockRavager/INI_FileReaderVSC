@@ -519,7 +519,8 @@ public:
     /**
     * FUNCTION - string
     * --------------------------------------------------
-    * Returns the value of a param as string
+    * Returns the value of a param as string. Returns a
+    * # if the param is not set or if it does not exists
     */
     string GetParamValue(const string& SectionName, const string& ParamName) {
         map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
@@ -531,12 +532,36 @@ public:
                 return LParamIT->second;
             }
             else {
-                return "NONE";
+                return "#";
             }
         }
         else {
-            return "NONE";
+            return "#";
         }
+    }
+
+    /**
+    * FUNCTION - DoubleLinkedList
+    * --------------------------------------------------
+    * Returns the list of the params that are children
+    * of a section
+    * NOTE: In the list the tuple (ParamName, 
+    *       ParamValue) are saved two by two
+    */
+    DoubleLinkedList<string> GetParamList(const string& SectionName) {
+        map<string, INI_Section>::iterator LSectionIT = MFileMap.find(SectionName);
+        DoubleLinkedList<string> LList;
+
+        if (LSectionIT != MFileMap.end()) {
+            for (auto& Pair : LSectionIT->second.MParamMap) {
+                LList.InsertAsLast(Pair.first);
+                LList.InsertAsLast(Pair.second);
+            }
+        }
+        else {
+            LList.AssignPivotItem("NONE");
+        }
+        return LList;
     }
 
     /**
