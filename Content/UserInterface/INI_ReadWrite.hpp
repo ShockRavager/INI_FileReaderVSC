@@ -16,12 +16,17 @@ protected:
 
     //////////////////////////////////////////////////
 
-    INI_File* LFileRef;
-    string MGivenPath[2];
+    INI_File* LFileRef;             // ATTRIBUTE: Address of the file class that is written or read
+    string MGivenPath[2];           // ATTRIBUTE: Default save path tuple (FileName, Path)
 
 
     //////////////////////////////////////////////////
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Executes PARASS action
+    */
     void ActionPARASS() {
         string LString[3];
         bool LInserted;
@@ -39,6 +44,11 @@ protected:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Executes FILESAVC action
+    */
     void ActionFILESAVC() {
         string LString[2];
         short LOverride;
@@ -61,12 +71,22 @@ protected:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Executes FILESAVO action
+    */
     void ActionFILESAVO() {
         if (MGivenPath[0] != "\0" && MGivenPath[1] != "\0") {
             LFileRef->SaveToFile(MGivenPath[0], MGivenPath[1]);
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Executes FILELOAD action
+    */
     void ActionFILELOAD() {
         string LString[2];
 
@@ -91,6 +111,11 @@ protected:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Executes FILEVIEW action
+    */
     void ActionFILEVIEW() {
         cout << "\n";
         LFileRef->PrintRows();
@@ -103,6 +128,11 @@ protected:
         cin >> MGivenPath[1];
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Executes SECVIEW action
+    */
     void ActionSECVIEW() {
         string LString;
         DoubleLinkedList<string> LList;
@@ -128,6 +158,11 @@ protected:
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Executes PARVIEW action
+    */
     void ActionPARVIEW() {
         string LString[2];
 
@@ -142,6 +177,12 @@ public:
 
     //////////////////////////////////////////////////
 
+    /**
+    * CONSTRUCTOR
+    * --------------------------------------------------
+    * Init default params, the address of the FileRef
+    * can't be nullptr
+    */
     INI_ReadWrite(INI_File* File) :
         LFileRef(File)
     { 
@@ -152,10 +193,21 @@ public:
 
     //////////////////////////////////////////////////
 
-    INI_File* GetFile() const {
+    /**
+    * const FUNCTION - INI_File*
+    * --------------------------------------------------
+    * Returns the address of the file object ref (read 
+    * only)
+    */
+    const INI_File* GetFile() const {
         return LFileRef;
     }
 
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Executes an action based on its name
+    */
     bool ExecAction(const string& Value) {
         bool LReturn = true;
 

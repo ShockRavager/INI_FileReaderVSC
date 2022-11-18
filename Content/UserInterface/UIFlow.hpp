@@ -16,11 +16,16 @@ protected:
 
     //////////////////////////////////////////////////
 
-    map<string, string> LCmdMap;
+    map<string, string> LCmdMap;            // ATTRIBUTE: Map of all commands
 
 
     //////////////////////////////////////////////////
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Insert a command in the map (init only)
+    */
     void InsertCmd(string Name, string Desc) {
         pair<string, string> LPair;
 
@@ -29,6 +34,11 @@ protected:
         LCmdMap.insert(LPair);
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Stores all commands (init only)
+    */
     void CreateCommands() {
         InsertCmd("CMD", "View all commands");
         InsertCmd("EXIT", "Quit program");
@@ -42,12 +52,23 @@ protected:
         InsertCmd("FILELOAD", "Loads file from a location");
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Prints a certain number of empty spaces in the 
+    * string
+    */
     void PrintSpaces(int Amount) {
         for (int i = 0; i < Amount; i += 1) {
             cout << " ";
         }
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Prints all commands presents in the map
+    */
     void PrintCommands() {
         cout << "\n";
 
@@ -62,6 +83,12 @@ protected:
         cout << "\n";
     }
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Init sections and params of the file .ini (init 
+    * only)
+    */
     void InitFileMap(INI_File& File) {
         File.AddSection("GameCharacter");
         File.AddSection("GC.Knight");
@@ -85,6 +112,11 @@ public:
 
     //////////////////////////////////////////////////
 
+    /**
+    * FUNCTION - void
+    * --------------------------------------------------
+    * Begins the flow of the program
+    */
     void BeginFlow() {
         INI_File LFile;
         INI_ReadWrite LFileFlow(&LFile);
