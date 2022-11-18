@@ -69,6 +69,14 @@ public:
         else {
             cout << "\n[REMOVE AT OFFSET]\tFAILED";
         }
+        LList.Clear();
+
+        if (LList.GetLength() == 0) {
+            cout << "\n[CLEAR ALL]\tDONE";
+        }
+        else {
+            cout << "\n[CLEAR ALL]\tFAILED";
+        }
         cout << "\n\n";
     }
 };
