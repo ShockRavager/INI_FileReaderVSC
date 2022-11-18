@@ -24,8 +24,8 @@ void ExecAllTests(const string& Option) {
 int main() {
     UIFlow LUserInterface;
 
-    ExecAllTests("DoubleLinkedList");
-    ExecAllTests("INI_File");
-//    LUserInterface.BeginFlow();
+//    ExecAllTests("DoubleLinkedList");
+//    ExecAllTests("INI_File");
+    LUserInterface.BeginFlow();
     return 0;
 }

@@ -13,9 +13,11 @@
 
 using namespace std;
 #ifdef __APPLE__
-    // NOTHING
+    #define BASE_PATH static_cast<string>("Saved/")
 #else
     using namespace filesystem;
+
+    #define BASE_PATH static_cast<string>("Saved\\")
 #endif
 
 
@@ -64,7 +66,7 @@ public:
         string 
             LString,
             LFullString;
-        int LMaxID = Path.length();
+        int LMaxID = Path.length() + BASE_PATH.length();
 
         LString.reserve(LMaxID);
         LFullString.reserve(LMaxID);
@@ -75,7 +77,7 @@ public:
             }
             else {
                 LString.push_back(GetPathSlash());
-                CreateDirectory(LFullString + LString);
+                CreateDirectory(BASE_PATH + LFullString + LString);
                 LFullString.append(LString);
                 LString.clear();
                 LString.reserve(LMaxID);
@@ -93,7 +95,7 @@ public:
         #ifdef __APPLE__
             struct stat LStat;
 
-            return stat(Path.c_str(), &LStat) != -1;
+            return stat((BASE_PATH + Path).c_str(), &LStat) != -1;
         #else
             return exists(Path);
         #endif
@@ -105,8 +107,8 @@ public:
     * Creates the path if not exists
     */
     static void CreatePathIfNotExists(const string& Path) {
-        if (!DoesPathExists(Path)) {
-            CreatePath(Path);
+        if (!DoesPathExists(BASE_PATH + Path)) {
+            CreatePath(BASE_PATH + Path);
         }
     }
 
@@ -116,6 +118,6 @@ public:
     * Creates the path if not exists
     */
     static string GetFullPath(const string& FileName, const string& Path, const string& Extension) {
-        return Path + FileName + Extension;
+        return BASE_PATH + Path + FileName + Extension;
     }
 };
