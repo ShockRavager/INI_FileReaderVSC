@@ -402,30 +402,23 @@ public:
     }
 
     /**
-    * FUNCTION - bool
+    * FUNCTION - void
     * --------------------------------------------------
-    * Removes an item from the list and returns false if
-    * the element does not exists
+    * Removes all occurrances of an item from the list 
     */
-    bool RemoveItem(const TItem& Item) {
-        DLLNode* LNodeID = MPivot;
+    void RemoveItem(const TItem& Item) {
+        DLLNode* LNodeID = MPivot->MNext;
         int LIndex = 0;
 
         if (MLength > 0) {
-            while (LNodeID->MNext != MPivot && LNodeID->MItem != Item) {
+            while (LNodeID != MPivot) {
                 LNodeID = LNodeID->MNext;
+                
+                if (LNodeID->MPrev->MItem == Item) {
+                    RemoveNode(LNodeID->MPrev);
+                    MLength -= 1;
+                }
             }
-            if (LNodeID != MPivot) {
-                RemoveNode(LNodeID);
-                MLength -= 1;
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return false;
         }
     }
 
@@ -461,7 +454,9 @@ public:
     * FUNCTION - int
     * --------------------------------------------------
     * Returns the offset where the item is stored, 
-    * returns -1 if the item does not exists
+    * returns -1 if the item does not exists 
+    * NOTE: If more items are equal, this will return 
+    *       the offset of the first occurrence
     */
     int FindOffset(const TItem& Item) const {
         DLLNode* LNodeID = MPivot->MPrev;

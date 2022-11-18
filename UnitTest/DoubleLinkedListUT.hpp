@@ -44,6 +44,31 @@ public:
         cout << "\n\n";
     }
 
+    static void FindUT() {
+        DoubleLinkedList<short> LList;
+
+        LList.InsertAsLast(1);
+        LList.InsertAsLast(2);
+        LList.InsertAsLast(3);
+        LList.InsertAsLast(4);
+        LList.InsertAsLast(5);
+
+        if (LList.FindOffset(4) == 5) {
+            cout << "\n[FIND OFFSET]\tDONE";
+        }
+        else {
+            cout << "\n[FIND OFFSET]\tFAILED";
+        }
+
+        if (LList.Contains(2)) {
+            cout << "\n[CONTAINS]\tDONE";
+        }
+        else {
+            cout << "\n[CONTAINS]\tFAILED";
+        }
+        cout << "\n\n";
+    }
+
     static void RemoveUT() {
         DoubleLinkedList<short> LList;
 
@@ -69,13 +94,24 @@ public:
         else {
             cout << "\n[REMOVE AT OFFSET]\tFAILED";
         }
+        LList.InsertAsFirst(56);
+        LList.InsertAsFirst(56);
+        LList.InsertAsLast(56);
+        LList.RemoveItem(56);
+
+        if (LList.GetLength() == 4) {
+            cout << "\n[REMOVE DUPLICATES]\tDONE";
+        }
+        else {
+            cout << "\n[REMOVE DUPLICATES]\tFAILED";
+        }
         LList.Clear();
 
         if (LList.GetLength() == 0) {
-            cout << "\n[CLEAR ALL]\tDONE";
+            cout << "\n[CLEAR ALL]\t\tDONE";
         }
         else {
-            cout << "\n[CLEAR ALL]\tFAILED";
+            cout << "\n[CLEAR ALL]\t\tFAILED";
         }
         cout << "\n\n";
     }
