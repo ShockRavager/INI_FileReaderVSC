@@ -66,7 +66,7 @@ public:
         string 
             LString,
             LFullString;
-        int LMaxID = Path.length() + BASE_PATH.length();
+        int LMaxID = Path.length();
 
         LString.reserve(LMaxID);
         LFullString.reserve(LMaxID);
