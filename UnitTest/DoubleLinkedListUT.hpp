@@ -17,6 +17,7 @@ public:
     static void InsertUT() {
         DoubleLinkedList<short> LList;
 
+        cout << "\n****** DoubleLinkedList Insertion Test ******\n";
         LList.InsertAsFirst(20);
         LList.InsertAsLast(30);
 
@@ -47,24 +48,25 @@ public:
     static void FindUT() {
         DoubleLinkedList<short> LList;
 
+        cout << "\n****** DoubleLinkedList Find Test ******\n";
         LList.InsertAsLast(1);
         LList.InsertAsLast(2);
         LList.InsertAsLast(3);
         LList.InsertAsLast(4);
         LList.InsertAsLast(5);
 
-        if (LList.FindOffset(4) == 5) {
-            cout << "\n[FIND OFFSET]\tDONE";
+        if (LList.FindOffset(5) == 4) {
+            cout << "\n[FIND OFFSET]\t\tDONE";
         }
         else {
-            cout << "\n[FIND OFFSET]\tFAILED";
+            cout << "\n[FIND OFFSET]\t\tFAILED";
         }
 
         if (LList.Contains(2)) {
-            cout << "\n[CONTAINS]\tDONE";
+            cout << "\n[CONTAINS]\t\tDONE";
         }
         else {
-            cout << "\n[CONTAINS]\tFAILED";
+            cout << "\n[CONTAINS]\t\tFAILED";
         }
         cout << "\n\n";
     }
@@ -72,6 +74,7 @@ public:
     static void RemoveUT() {
         DoubleLinkedList<short> LList;
 
+        cout << "\n****** DoubleLinkedList Deletion Test ******\n";
         LList.InsertAsLast(1);
         LList.InsertAsLast(2);
         LList.InsertAsLast(3);

@@ -29,18 +29,18 @@ public:
         getline(LFileStr, LString);
 
         if (LString == "[Section]") {
-            cout << "[SECTION]\t=\tDONE\n";
+            cout << "[SECTION]\t\tDONE\n";
         }
         else {
-            cout << "[SECTION]\t=\tFAILED\n";
+            cout << "[SECTION]\t\tFAILED\n";
         }
         getline(LFileStr, LString);
 
         if (LString == "Param = Value") {
-            cout << "[PARAM]\t=\tDONE\n";
+            cout << "[PARAM]\t\t\tDONE\n";
         }
         else {
-            cout << "[PARAM]\t=\tFAILED\n";
+            cout << "[PARAM]\t\t\tFAILED\n";
         }
         cout << "\n";
         LFileStr.close();
@@ -57,10 +57,10 @@ public:
         LFile.LoadFromFile("FileName", "Path1/Path2/");
 
         if (LFile.GetParamValue("Section", "Param") == "Value") {
-            cout << "[PARAM VALUE]\t=\tDONE\n";
+            cout << "[PARAM VALUE]\t\tDONE\n";
         }
         else {
-            cout << "[PARAM VALUE]\t=\tFAILED\n";
+            cout << "[PARAM VALUE]\t\tFAILED\n";
         }
         cout << "\n";
     }
@@ -74,10 +74,10 @@ public:
         LFile.AssignParam("Section", "Param", "Value");
 
         if (LFile.GetParamValue("Section", "Param") == "Value") {
-            cout << "[PARAM VALUE]\t=\tDONE\n";
+            cout << "[PARAM VALUE]\t\tDONE\n";
         }
         else {
-            cout << "[PARAM VALUE]\t=\tFAILED\n";
+            cout << "[PARAM VALUE]\t\tFAILED\n";
         }
         cout << "\n";
     }

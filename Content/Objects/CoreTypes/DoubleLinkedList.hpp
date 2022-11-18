@@ -413,7 +413,7 @@ public:
         if (MLength > 0) {
             while (LNodeID != MPivot) {
                 LNodeID = LNodeID->MNext;
-                
+
                 if (LNodeID->MPrev->MItem == Item) {
                     RemoveNode(LNodeID->MPrev);
                     MLength -= 1;
