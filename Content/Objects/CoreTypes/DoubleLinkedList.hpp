@@ -393,7 +393,7 @@ public:
             LIndex += 1;
         }
         LNode->MItem = Item;
-        InsertNode(LNode, LNodeID, LNodeID->MNext);
+        InsertNode(LNode, LNodeID->MPrev, LNodeID);
         MLength += 1;
     }
 
