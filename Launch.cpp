@@ -26,7 +26,7 @@ int main() {
 
 //    ExecAllTests("DoubleLinkedList");
 //    ExecAllTests("INI_File");
-//    DirManager::CreatePath("Data/");
+//    DirManager::CreatePath("Data\\");
     LUserInterface.BeginFlow();
     return 0;
 }

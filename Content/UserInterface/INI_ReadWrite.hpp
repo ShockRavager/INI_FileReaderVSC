@@ -204,13 +204,11 @@ public:
     }
 
     /**
-    * FUNCTION - bool
+    * FUNCTION - void
     * --------------------------------------------------
     * Executes an action based on its name
     */
-    bool ExecAction(const string& Value) {
-        bool LReturn = true;
-
+    void ExecAction(const string& Value) {
         if (Value == "PARASS") {
             ActionPARASS();
         }
@@ -236,8 +234,7 @@ public:
             ActionPARVIEW();
         }
         else {
-            LReturn = false;
+            return;
         }
-        return LReturn;
     }
 };

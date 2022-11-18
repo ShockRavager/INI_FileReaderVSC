@@ -16,7 +16,7 @@ protected:
 
     //////////////////////////////////////////////////
 
-    map<string, string> LCmdMap;            // ATTRIBUTE: Map of all commands
+    map<string, string> MCmdMap;            // ATTRIBUTE: Map of all commands
 
 
     //////////////////////////////////////////////////
@@ -31,7 +31,7 @@ protected:
 
         LPair.first = Name;
         LPair.second = Desc;
-        LCmdMap.insert(LPair);
+        MCmdMap.insert(LPair);
     }
 
     /**
@@ -72,7 +72,7 @@ protected:
     void PrintCommands() {
         cout << "\n";
 
-        for (auto& Pair : LCmdMap) {
+        for (auto& Pair : MCmdMap) {
             cout << Pair.first;
             PrintSpaces(16 - Pair.first.length());
             cout << "=";
@@ -121,9 +121,7 @@ public:
         INI_File LFile;
         INI_ReadWrite LFileFlow(&LFile);
         string LString;
-        bool 
-            LExecValid = true,
-            LCmdValid;
+        bool LExecValid = true;
 
         InitFileMap(LFile);
         CreateCommands();
@@ -133,17 +131,18 @@ public:
             cout << "\nType CMD to view all commands or a command: ";
             cin >> LString;
 
-            if (LString == "CMD") {
-                PrintCommands();
-            }
-            else if (LString == "EXIT") {
-                LExecValid = false;
+            if (MCmdMap.find(LString) != MCmdMap.end()) {
+                if (LString == "CMD") {
+                    PrintCommands();
+                }
+                else if (LString == "EXIT") {
+                    LExecValid = false;
+                }
+                else {
+                    LFileFlow.ExecAction(LString);
+                }
             }
             else {
-                LCmdValid = LFileFlow.ExecAction(LString);
-            }
-
-            if (!LCmdValid) {
                 cout << "ERROR - Invalid command...\n";
             }
         }
