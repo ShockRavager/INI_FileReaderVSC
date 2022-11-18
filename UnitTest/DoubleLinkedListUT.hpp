@@ -43,4 +43,32 @@ public:
         }
         cout << "\n\n";
     }
+
+    static void RemoveUT() {
+        DoubleLinkedList<short> LList;
+
+        LList.InsertAsLast(1);
+        LList.InsertAsLast(2);
+        LList.InsertAsLast(3);
+        LList.InsertAsLast(4);
+        LList.InsertAsLast(5);
+        LList.RemoveItem(3);
+
+        if (!LList.Contains(3)) {
+            cout << "\n[REMOVE ITEM]\t\tDONE";
+        }
+        else {
+            cout << "\n[REMOVE ITEM]\t\tFAILED";
+        }
+        LList.InsertAt(3, 2);
+        LList.RemoveAt(3);
+
+        if (LList[3] != 4) {
+            cout << "\n[REMOVE AT OFFSET]\tDONE";
+        }
+        else {
+            cout << "\n[REMOVE AT OFFSET]\tFAILED";
+        }
+        cout << "\n\n";
+    }
 };

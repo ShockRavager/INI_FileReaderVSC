@@ -11,7 +11,7 @@ using namespace std;
 int main() {
     UIFlow LUserInterface;
 
-    DoubleLinkedListUT::InsertUT();
+    DoubleLinkedListUT::RemoveUT();
 //    LUserInterface.BeginFlow();
     return 0;
 }

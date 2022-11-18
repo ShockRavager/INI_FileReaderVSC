@@ -3,6 +3,10 @@
 // PATH     ->  Content/Objects/CoreTypes
 // FILE     ->  DoubleLinkedList.hpp
 
+#include <vector>
+
+using namespace std;
+
 
 template<typename TItem>
 class DoubleLinkedList {
@@ -384,7 +388,7 @@ public:
     */
     void InsertAt(TItem Item, int Offset) {
         DLLNode
-            * LNodeID = MPivot,
+            * LNodeID = MPivot->MNext,
             * LNode = new DLLNode;
         int LIndex = 0;
 
@@ -435,7 +439,7 @@ public:
     *       the right offset ID)
     */
     void RemoveAt(int Offset) {
-        DLLNode* LNodeID = MPivot;
+        DLLNode* LNodeID = MPivot->MNext;
         int LIndex = 0;
 
         if (MLength > 0) {
@@ -454,6 +458,32 @@ public:
     }
 
     /**
+    * FUNCTION - int
+    * --------------------------------------------------
+    * Returns the offset where the item is stored, 
+    * returns -1 if the item does not exists
+    */
+    int FindOffset(const TItem& Item) const {
+        DLLNode* LNodeID = MPivot->MPrev;
+        int LIndex = MLength - 1;
+
+        while (LNodeID != MPivot && LNodeID->MItem != Item) {
+            LNodeID = LNodeID->MPrev;
+            LIndex -= 1;
+        }
+        return LIndex;
+    }
+
+    /**
+    * FUNCTION - bool
+    * --------------------------------------------------
+    * Returns true if the item exists in the list
+    */
+    bool Contains(const TItem& Item) const {
+        return FindOffset(Item) != -1;
+    }
+
+    /**
     * FUNCTION - void
     * --------------------------------------------------
     * Clears the list
@@ -463,6 +493,23 @@ public:
         delete MPivot;
         MPivot = CreatePivot();
         MLength = 0;
+    }
+
+    /**
+    * FUNCTION - vector<TItem>
+    * --------------------------------------------------
+    * Transform the list in a vector
+    */
+    vector<TItem> ToArray() {
+        vector<TItem> LArray;
+        DLLNode LNode = MPivot->MNext;
+
+        LArray.reserve(MLength);
+
+        for (int i = 0; i < MLength; i += 1) {
+            LArray.push_back(LNode.MItem);
+        }
+        return LArray;
     }
 
     /**
@@ -530,7 +577,7 @@ public:
     }
 
     TItem& operator [] (int Offset) {
-        DLLNode* LNodeID = MPivot;
+        DLLNode* LNodeID = MPivot->MNext;
         int LIndex = 0;
 
         while (LIndex < Offset) {
@@ -546,7 +593,7 @@ public:
     }
 
     TItem& operator [] (int Offset) const {
-        DLLNode* LNodeID = MPivot;
+        DLLNode* LNodeID = MPivot->MNext;
         int LIndex = 0;
 
         while (LIndex < Offset) {
