@@ -70,6 +70,8 @@ public:
 
         LString.reserve(LMaxID);
         LFullString.reserve(LMaxID);
+        CreateDirectory(BASE_PATH);
+        LFullString.append(BASE_PATH);
 
         for (int i = 0; i < LMaxID; i += 1) {
             if (Path[i] != GetPathSlash()) {
@@ -77,7 +79,7 @@ public:
             }
             else {
                 LString.push_back(GetPathSlash());
-                CreateDirectory(BASE_PATH + LFullString + LString);
+                CreateDirectory(LFullString + LString);
                 LFullString.append(LString);
                 LString.clear();
                 LString.reserve(LMaxID);
@@ -97,7 +99,7 @@ public:
 
             return stat((BASE_PATH + Path).c_str(), &LStat) != -1;
         #else
-            return exists(Path);
+            return exists(BASE_PATH + Path);
         #endif
     }
 
