@@ -27,19 +27,6 @@ protected:
     //////////////////////////////////////////////////
 
     /**
-    * STATIC FUNCTION - char
-    * --------------------------------------------------
-    * Returns the OS based slash separator for the paths
-    */
-    static char GetPathSlash() {
-        #ifdef __APPLE__
-            return '/';
-        #else
-            return '\\';
-        #endif
-    }
-
-    /**
     * STATIC FUNCTION - void
     * --------------------------------------------------
     * Returns the OS based slash separator for the paths
@@ -121,5 +108,18 @@ public:
     */
     static string GetFullPath(const string& FileName, const string& Path, const string& Extension) {
         return BASE_PATH + Path + FileName + Extension;
+    }
+
+    /**
+    * STATIC FUNCTION - char
+    * --------------------------------------------------
+    * Returns the OS based slash separator for the paths
+    */
+    static char GetPathSlash() {
+        #ifdef __APPLE__
+            return '/';
+        #else
+            return '\\';
+        #endif
     }
 };

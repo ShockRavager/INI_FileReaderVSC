@@ -18,14 +18,17 @@ public:
     static void SaveData() {
         INI_File LFile;
         ifstream LFileStr;
-        string LString;
+        string 
+            LString,
+            LSlash;
 
         cout << "\n****** INI_File Save Test ******\n\n";
+        LSlash += DirManager::GetPathSlash();
         LFile.AddSection("Section");
         LFile.AddParam("Section", "Param");
         LFile.AssignParam("Section", "Param", "Value");
-        LFile.SaveToFile("FileName", "Path1/Path2/");
-        LFileStr.open("Path1/Path2/FileName.ini");
+        LFile.SaveToFile("FileName", "Path1" + LSlash + "Path2" + LSlash);
+        LFileStr.open(BASE_PATH + "Path1" + LSlash + "Path2" + LSlash + "FileName.ini");
         getline(LFileStr, LString);
 
         if (LString == "[Section]") {

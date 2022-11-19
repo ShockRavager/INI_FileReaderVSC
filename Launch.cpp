@@ -10,9 +10,8 @@ using namespace std;
 int main() {
     UIFlow LUserInterface;
 
-//    UnitTest::ExecAllTests("DoubleLinkedList");
-//    UnitTest::ExecAllTests("INI_File");
-//    DirManager::CreatePath("Data\\");
-    LUserInterface.BeginFlow();
+    UnitTest::ExecAllTests("DoubleLinkedList");
+    UnitTest::ExecAllTests("INI_File");
+//    LUserInterface.BeginFlow();
     return 0;
 }
