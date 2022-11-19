@@ -17,7 +17,9 @@ using namespace std;
 #else
     using namespace filesystem;
 
-    #define BASE_PATH static_cast<string>("Saved\\")
+    #ifndef BASE_PATH
+        #define BASE_PATH static_cast<string>("Saved\\")
+    #endif
 #endif
 
 
