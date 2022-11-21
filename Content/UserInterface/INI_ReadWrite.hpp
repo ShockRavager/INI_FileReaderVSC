@@ -16,7 +16,7 @@ protected:
 
     //////////////////////////////////////////////////
 
-    INI_File* LFileRef;             // ATTRIBUTE: Address of the file class that is written or read
+    INI_File* MFileRef;             // ATTRIBUTE: Address of the file class that is written or read
     string MGivenPath[2];           // ATTRIBUTE: Default save path tuple (FileName, Path)
 
 
@@ -37,7 +37,7 @@ protected:
         cin >> LString[1];
         cout << "Insert param value (type # or ; to leave the value empty): ";
         cin >> LString[2];
-        LInserted = LFileRef->AssignParam(LString[1], LString[0], LString[2]);
+        LInserted = MFileRef->AssignParam(LString[1], LString[0], LString[2]);
 
         if (!LInserted) {
             cout << "\nERROR - The specified section or param does not exists...\n";
@@ -63,11 +63,11 @@ protected:
             cin >> LOverride;
 
             if (LOverride == 0) {
-                LFileRef->SaveToFile(LString[0], LString[1]);
+                MFileRef->SaveToFile(LString[0], LString[1]);
             }
         }
         else {
-            LFileRef->SaveToFile(LString[0], LString[1]);
+            MFileRef->SaveToFile(LString[0], LString[1]);
         }
     }
 
@@ -78,7 +78,7 @@ protected:
     */
     void ActionFILESAVO() {
         if (MGivenPath[0] != "\0" && MGivenPath[1] != "\0") {
-            LFileRef->SaveToFile(MGivenPath[0], MGivenPath[1]);
+            MFileRef->SaveToFile(MGivenPath[0], MGivenPath[1]);
         }
     }
 
@@ -96,7 +96,7 @@ protected:
         cin >> LString[1];
 
         if (DirManager::DoesPathExists(LString[1] + LString[0] + ".ini")) {
-            LFileRef->LoadFromFile(LString[0], LString[1]);
+            MFileRef->LoadFromFile(LString[0], LString[1]);
         }
         else {
             short LOption;
@@ -118,7 +118,7 @@ protected:
     */
     void ActionFILEVIEW() {
         cout << "\n";
-        LFileRef->PrintRows();
+        MFileRef->PrintRows();
     }
 
     void ActionGIVEPATH() {
@@ -139,7 +139,7 @@ protected:
 
         cout << "\nInsert section name: ";
         cin >> LString;
-        LList = LFileRef->GetParamList(LString);
+        LList = MFileRef->GetParamList(LString);
         
         if (LList.GetPivotItem() == "NONE") {
             cout << "\nERROR - The specified section or param does not exists...\n";
@@ -170,7 +170,7 @@ protected:
         cin >> LString[0];
         cout << "Insert parent section name: ";
         cin >> LString[1];
-        cout << "\nValue = " << LFileRef->GetParamValue(LString[1], LString[0]) << "\n";
+        cout << "\nValue = " << MFileRef->GetParamValue(LString[1], LString[0]) << "\n";
     }
 
 public:
@@ -184,7 +184,7 @@ public:
     * can't be nullptr
     */
     INI_ReadWrite(INI_File* File) :
-        LFileRef(File)
+        MFileRef(File)
     { 
         MGivenPath[0] = "\0";
         MGivenPath[1] = "\0";
@@ -200,7 +200,7 @@ public:
     * only)
     */
     const INI_File* GetFile() const {
-        return LFileRef;
+        return MFileRef;
     }
 
     /**
