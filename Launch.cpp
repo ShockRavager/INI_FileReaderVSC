@@ -12,6 +12,6 @@ int main() {
 
     UnitTest::ExecAllTests("DoubleLinkedList");
     UnitTest::ExecAllTests("INI_File");
-//    LUserInterface.BeginFlow();
+    LUserInterface.BeginFlow();
     return 0;
 }
